@@ -1,0 +1,94 @@
+# $Id$
+
+Options All
+
+DeflateFilterNote ratio
+
+AddOutputFilterByType DEFLATE text/css text/javascript text/html text/plain text/xml application/x-javascript application/ms* application/vnd*
+
+# Netscape 4.x has some problems...
+BrowserMatch ^Mozilla/4 gzip-only-text/html
+ 
+# Netscape 4.06-4.08 have some more problems
+BrowserMatch ^Mozilla/4\.0[678] no-gzip
+ 
+# NOTE: Due to a bug in mod_setenvif up to Apache 2.0.48
+# the above regex won't work. You can use the following
+# workaround to get the desired effect:
+BrowserMatch \bMSI[E] !no-gzip
+
+SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png|exe|t?gz|zip|bz2|sit|rar|pdf)$ no-gzip dont-vary 
+
+Header append Vary User-Agent env=!dont-vary
+
+DeflateCompressionLevel		9
+ 
+AddType application/x-httpd-php .php
+AddType text/javascript .js
+AddType text/css .css
+
+DirectoryIndex index.php
+
+# Action throw /index.php
+
+<FilesMatch "^([^.]+)$">
+	ForceType throw
+</FilesMatch>
+
+<FilesMatch index.php>
+	ForceType application/x-httpd-php
+</FilesMatch>
+
+ErrorDocument 404 /index.php
+ErrorDocument 401 /index.php
+
+php_flag	display_errors					on
+php_flag	display_startup_errors			on
+php_value	output_buffering				on
+
+# unicode support start
+AddDefaultCharset							utf-8
+
+php_value	mbstring.func_overload			7
+php_value	default_charset					UTF-8
+php_value	mbstring.language				Russian
+
+php_value	mbstring.internal_encoding		UTF-8
+
+php_flag	mbstring.encoding_translation	on
+
+php_value	mbstring.http_input				auto
+php_value	mbstring.http_input				"UTF-8,KOI8-R,CP1251"
+
+php_value	mbstring.http_output			pass
+php_value	mbstring.http_output			UTF-8
+
+php_value	mbstring.detect_order			auto
+php_value	mbstring.detect_order			"UTF-8,KOI8-R,CP1251"
+
+# unicode support end
+
+# some php flags and values start
+php_flag	zlib.output_compression			Off
+php_value	zlib.output_compression_level	9
+
+php_value	upload_max_filesize				20M
+php_value	post_max_size					20M
+php_value	max_execution_time				300
+php_value	max_input_time					300
+php_value	memory_limit					256M
+# some php flags and values end
+
+# debugging and profiling
+php_flag	xdebug.remote_autostart			Off
+php_flag	xdebug.remote_enable			Off
+php_flag	xdebug.collect_params			Off
+php_flag	xdebug.collect_return			Off
+php_flag	xdebug.collect_vars				Off
+php_flag	xdebug.show_exception_trace		On
+php_flag	xdebug.show_local_vars			Off
+php_flag	xdebug.show_mem_delta			Off
+php_flag	xdebug.profiler_append			Off
+php_flag	xdebug.profiler_enable			Off
+php_flag	xdebug.profiler_aggregate		Off
+php_flag	xdebug.profile_enable_trigger	Off

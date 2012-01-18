@@ -1,0 +1,173 @@
+@page normal {
+	margin: 0 !important;
+	padding: 0 !important;
+	size: portrait;
+	page-break-inside: auto;
+}
+
+@page rotated {
+	margin: 0 !important;
+	padding: 0 !important;
+	size: landscape;
+	page-break-inside: auto;
+}
+
+a {
+	text-decoration: none;
+	color: black;
+}
+
+table {
+	table-layout: auto;
+	width: 99%;
+	horizontal-align: center;
+	border-collapse: collapse !important;	
+}
+
+table.report {
+	border: 1px solid gray;
+}
+
+td.report {
+	padding-left: 3px;
+	padding-right: 3px;
+	font: 8pt sans-serif;
+	border: 1px solid gray;
+}
+
+th.report {
+	font: bolder 8pt sans-serif;
+	border: 1px solid gray;
+}
+
+th.groupsplitter {
+	background-color: gray !important;
+}
+
+.group {
+	font: bolder 10pt sans-serif !important;
+}
+
+.groupheader {
+	page-break-before: always;
+}
+
+.groupfooter {
+	
+}
+
+h1, h2 {
+	font-family: serif;
+}
+
+h2, h4 {
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	font-weight: bolder;
+}
+
+h2 {
+	font-size: 15pt;
+}
+
+h4 {
+	font-size: 12pt;
+}
+
+h5, h6 {
+	font-family: sans-serif;
+}
+
+h6 {
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	font-weight: normal;
+	font-size: 6pt;
+}
+
+h5 {
+	margin: 0;
+	padding: 0;
+	text-align: right;
+	font-weight: normal;
+	font-size: 7pt;
+}
+
+#print.portrait {
+	page: normal;
+    width: 100% !important;
+	float: left !important;
+	top: 0 !important;
+	left: 0 !important;
+}
+
+#print.landscape {
+	page: rotated;
+    width: 100% !important;
+	float: left !important;
+	top: 0 !important;
+	left: 0 !important;
+}
+
+.small {
+	font: 8pt sans-serif !important;
+}
+
+.block {
+	display: block;
+}
+
+.very_small {
+	font: sans-serif !important;
+	font-weight: normal !important;
+	font-size: 6pt !important;
+}
+
+.big_italic, .italic_big {
+	font: italic 12pt serif !important;
+}
+
+.bold {
+	font-weight: bolder !important;
+}
+
+.strike {
+	text-decoration: line-through !important;
+}
+
+.bold_small {
+	font-weight: bold !important;
+	font-size: 8pt !important;
+}
+
+.bold_big, .big_bold {
+	font-weight: bold !important;
+	font-size: 12pt !important;
+}
+
+.bolder_small {
+	font-weight: bolder !important;
+	font-size: 8pt !important;
+}
+
+.red {
+	color: #EE0000 !important;
+}
+
+.blue {
+	color: #0000EE !important;
+}
+
+.blink {
+	text-decoration: blink !important;
+}
+
+.center {
+	text-align: center !important;
+}
+
+.noborders {
+	border: none !important;
+}

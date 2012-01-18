@@ -1,0 +1,13 @@
+#!/bin/bash
+
+for fl in `ls -1 Base*.class.php`; do
+    nfl=`echo $fl|sed s/Base//`
+    cat $fl|sed s/sfDoctrineRecord/Doctrine_Record/|sed s/BaseCs/Cs/ >$nfl
+    rm $fl
+done
+
+#for fl in `ls -1 *Table.class.php`; do
+#    nfl=Model$fl
+#    cat $fl|sed s/Cs/ModelCs/ >$nfl
+#    rm $fl
+#done
