@@ -65,7 +65,7 @@
 		}
 
 		function getOwnedCalendars() {
-			return $this->_calendarmanager['[owned]']->getElements();
+//			return $this->_calendarmanager['[owned]']->getElements();
 		}
 
 		function getPublicCalendar($calendar_id = 0) {
@@ -73,7 +73,7 @@
 		}
 
 		function getPublicCalendars() {
-			return $this->_calendarmanager['[public]']->getElements();
+//			return $this->_calendarmanager['[public]']->getElements();
 		}
 
 		function getDelegatedCalendar($calendar_id = 0) {
@@ -81,7 +81,7 @@
 		}
 
 		function getDelegatedCalendars() {
-			return $this->_calendarmanager['[delegated]']->getElements();
+//			return $this->_calendarmanager['[delegated]']->getElements();
 		}
 
 		function getCalendar($calendar_id = 0) {

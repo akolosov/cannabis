@@ -4,9 +4,9 @@
 	define('ENGINE_DESCR_SHORT', "ORP System");
 	define('ENGINE_VERSION', "1.3.0.0");
 	define('ENGINE_BUILD', "sativa");
-	define('DEBUG_MODE', false);
+	define('DEBUG_MODE', true);
 	define('RUNTIME_DEBUG_MODE', DEBUG_MODE);
-	define('ADVANCED_DEBUG_MODE', false);
+	define('ADVANCED_DEBUG_MODE', false); // Жуткая информация обо всех варнингах и всякой фигне
 	
 	# кофигурация системы
 	require_once("config.php");

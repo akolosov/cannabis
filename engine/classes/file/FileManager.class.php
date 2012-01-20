@@ -43,7 +43,7 @@
 		}
 
 		function getOwnedFiles() {
-			return $this->_filemanager['[owned]']->getElements();
+//			return $this->_filemanager['[owned]']->getElements();
 		}
 
 		function getDelegatedFile($file_id = 0) {
@@ -51,7 +51,7 @@
 		}
 
 		function getDelegatedFiles() {
-			return $this->_filemanager['[delegated]']->getElements();
+//			return $this->_filemanager['[delegated]']->getElements();
 		}
 
 		function getFile($file_id = 0) {

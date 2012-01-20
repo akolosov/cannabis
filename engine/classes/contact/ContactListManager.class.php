@@ -35,11 +35,11 @@
 		}
 
 		function getOwnedContactLists() {
-			return $this->_contactlistmanager['[owned]']->getElements();
+//			return $this->_contactlistmanager['[owned]']->getElements();
 		}
 
 		function getPublicContactLists() {
-			return $this->_contactlistmanager['[public]']->getElements();
+//			return $this->_contactlistmanager['[public]']->getElements();
 		}
 
 		function getPublicContactList($contactlist_id = NULL) {
@@ -51,7 +51,7 @@
 		}
 
 		function getDelegatedContactLists() {
-			return $this->_contactlistmanager['[delegated]']->getElements();
+//			return $this->_contactlistmanager['[delegated]']->getElements();
 		}
 
 		function getContactList($contactlist_id = NULL) {

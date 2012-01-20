@@ -58,11 +58,11 @@
 		}
 
 		function getOwnedMessages() {
-			return $this->getProperty('[owned]')->getElements();
+//			return $this->getProperty('[owned]')->getElements();
 		}
 
 		function getRecievedMessages() {
-			return $this->getProperty('[recieved]')->getElements();
+//			return $this->getProperty('[recieved]')->getElements();
 		}
 
 		function getOwnedMessage($message_id = 0) {
