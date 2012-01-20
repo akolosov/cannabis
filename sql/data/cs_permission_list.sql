@@ -81,6 +81,19 @@ COPY cs_permission_list (id, permission_id, module_id, can_read, can_write, can_
 46	2	13	t	t	t	f	f	f
 52	3	13	t	t	t	f	f	f
 58	1	13	t	t	t	t	t	t
+59	1	35	t	t	t	t	t	t
+60	1	36	t	t	t	t	t	t
+61	1	37	t	t	t	t	t	t
+62	1	38	t	t	t	t	t	t
+63	2	35	t	t	t	f	f	f
+64	2	36	t	t	t	f	f	f
+65	2	37	t	t	t	f	f	f
+66	2	38	t	t	t	f	f	f
+67	3	35	t	t	t	f	f	f
+68	3	36	t	t	t	f	f	f
+69	3	37	t	t	t	f	f	f
+70	3	38	t	t	t	f	f	f
+
 \.
 
 
