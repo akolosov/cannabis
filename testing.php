@@ -54,7 +54,7 @@ require_once(COMMON_MODULES_PATH."/override.options.php");
 <?php
 //$manager	= new CalendarManager($engine, USER_CODE);
 //$calendar	= $manager->createCalendar(array('owner' => $engine, 'name' => 'testing', 'description' => 'testing 1 2 3', 'is_public' => true));
-//$permission	= $calendar->createPermission(array('account_id' => 96, 'permission_id' => 3));
+//$permission	= $calendar->createPermission(array('account_id' => 1, 'permission_id' => 3));
 //$event		= $calendar->createEvent(array('subject' => 'test', 'event' => 'test 1 2 3', 'started_at' => strftime("%Y-%m-%d %H:%M:%S", time()), 'ended_at' => strftime("%Y-%m-%d %H:%M:%S", time()+3600), 'priority_id' => Constants::EVENT_PRIORITY_NORMAL));
 //$calendar->save();
 
