@@ -1,1 +1,5 @@
 Workflow+BPMS насписана на PHP5+PostgreSQL+Prototype.JS
+
+Создаете базу с именем "cannabis" и восстанавливаете туда файл ./sql/backup/cannabis.backup.
+
+У всех пользователей пароль 123
