@@ -30,7 +30,7 @@ SELECT pg_catalog.setval('cs_account_id_seq', 1, true);
 COPY cs_account (id, parent_id, name, description, permission_id, passwd, email, icq, jabber, is_active, cell, cellop_id, division_id) FROM stdin;
 0	\N	Все пользователи	Все пользователи системы	\N	\N	\N	\N	\N	t	\N	\N	\N
 -1	0	Система	Система документооборота	1	\N	\N	\N	\N	t	\N	\N	\N
-1	34	Администратор	Администратор всей системы	1	040f9f5e60e3ec813eefdbf9697ab6cb	admin@uk-most.ru	\N	\N	t	\N	\N	\N
+1	-1	Администратор	Администратор всей системы	1	040f9f5e60e3ec813eefdbf9697ab6cb	admin@uk-most.ru	\N	\N	t	\N	\N	\N
 \.
 
 

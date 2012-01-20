@@ -84,7 +84,7 @@ define('EVENTS_IN_ROW', 2);
 define('CONFIG_PREFIX', 'CFG_');
 
 // База данных
-define('DATABASE_DSN', "pgsql://postgres:bumpy@localhost:5432/cannabis");
+define('DATABASE_DSN', "pgsql://postgres:postgres@localhost:5432/cannabis");
 
 // Установка временной зоны
 date_default_timezone_set(TIME_ZONE);
