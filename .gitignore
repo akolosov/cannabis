@@ -2,3 +2,4 @@ data/logs/*.log
 data/cache/*.php
 tmp/
 .project
+.settings/

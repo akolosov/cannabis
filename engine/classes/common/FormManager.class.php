@@ -953,6 +953,9 @@ class FormManager extends Core {
 				}
 			}
 		}
+		if (inNULL($options['action'])) {
+			$options['action'] = $options['process']->getCurrentAction();
+		}
 		return $result.((ACTION == 'execute')?"  \$this->complete();\n":((ACTION == 'saveform')?"  \$this->saveForm();\n":"")).($options['action']->isInteractive() == Constants::TRUE?"} else {\n  \$this->getFormManager()->formNotValid();\n}\n\n":"");
 	}
 	
