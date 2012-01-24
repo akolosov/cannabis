@@ -447,10 +447,12 @@ class ProcessInstance extends Core { // экземпляр процесса
 	function view($print = false) {
 		// просмотр процесса если есть действие типа Информация
 		$action = $this->getInfoAction();
-		if (isNotNULL($action)) {
+		if ($action) {
 			$action->view($print);
 			include_once($action->getProperty('[form_file]'));
-			unlink($action->getProperty('[form_file]'));
+			if (!$this->_debug) {
+				unlink($action->getProperty('[form_file]'));
+			}
 		}
 	}
 
@@ -495,7 +497,9 @@ class ProcessInstance extends Core { // экземпляр процесса
 
 							logMessage('запуск кода действия "'.$this->getCurrentAction()->getProperty('name').'"');
 							include_once($this->getCurrentAction()->getProperty('[code_file]'));
-							unlink($this->getCurrentAction()->getProperty('[code_file]'));
+							if (!$this->_debug) {
+								unlink($this->getCurrentAction()->getProperty('[code_file]'));
+							}
 							$this->_instance['[code_included]'] = true;
 						}
 
@@ -513,7 +517,9 @@ class ProcessInstance extends Core { // экземпляр процесса
 						
 							logMessage('запуск формы действия "'.$this->getCurrentAction()->getProperty('name').'"');
 							include_once($this->getCurrentAction()->getProperty('[form_file]'));
-							unlink($this->getCurrentAction()->getProperty('[form_file]'));
+							if (!$this->_debug) {
+								unlink($this->getCurrentAction()->getProperty('[form_file]'));
+							}
 							$this->_instance['[form_included]'] = true;
 							$this->startCurrentToday();
 						} elseif ((!$this->canPerform()) and ($this->getCurrentAction()->isInteractive())) {

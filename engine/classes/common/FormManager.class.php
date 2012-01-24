@@ -65,9 +65,9 @@ class FormManager extends Core {
 				return ((trim($_FILES[$name]['name']) <> '') and ($this->isMatch($_FILES[$name]['name'], $type)));
 			} else {
 				if ($multiple) {
-					return ((isNotNULL($parameters[strtoupper($name)]) == true) and ((trim(implode('||', $parameters[strtoupper($name)])) <> '') == true) and ($this->isMatch(trim(implode('||', $parameters[strtoupper($name)])), $type)));
+					return (($parameters[strtoupper($name)]) and ((trim(implode('||', $parameters[strtoupper($name)])) <> '') == true) and ($this->isMatch(trim(implode('||', $parameters[strtoupper($name)])), $type)));
 				} else {
-					if (isNull($extra_parameters)) {
+					if (!$extra_parameters) {
 						return ((defined(strtoupper($name)) == true) and ((trim(constant(strtoupper($name))) <> '') == true) and ($this->isMatch(trim(constant(strtoupper($name))), $type)));
 					} else {
 						if (strpos($extra_parameters, "%") === false) {
@@ -588,7 +588,7 @@ class FormManager extends Core {
 	}
 
 	function generateForm(array $options = array()) {
-		if (isNotNULL($options['process']) or isNotNULL($options['action'])) {
+		if (($options['process']) or ($options['action'])) {
 
 			if (is_null($options['process'])) {
 				if ($options['chrono']) {
@@ -807,10 +807,10 @@ class FormManager extends Core {
 				break;
 				
 			default:
-				$exp = NULL;
+				$exp = false;
 				break;
 		}
-		if (isNotNULL($exp)) {
+		if ($exp) {
 			return preg_match($exp, $str);
 		} else {
 			return true;
@@ -824,14 +824,14 @@ class FormManager extends Core {
 	function generateValidationCode(array $options = array()) {
 		$result = "";
 		
-		if (isNotNULL($options['process']) or isNotNULL($options['action'])) {
-			if (isNULL($options['process'])) {
+		if (($options['process']) or ($options['action'])) {
+			if (!$options['process']) {
 				$options['process'] = $options['action']->getOwnerByClass('ProcessInstanceWrapper');
 			}
-			if (isNULL($options['action'])) {
+			if (!$options['action']) {
 				$options['action'] = $options['process']->getCurrentAction();
 			}
-			if (isNULL($options['properties'])) {
+			if (!$options['properties']) {
 				$options['properties'] = $options['action']->getProperty('[action]')->getProperty('[properties]')->getElements();
 			}
 			
@@ -846,13 +846,13 @@ class FormManager extends Core {
 							case Constants::PROPERTY_TYPE_DATE:
 							case Constants::PROPERTY_TYPE_DATETIME:
 							case Constants::PROPERTY_TYPE_OBJECT:
-//								if ($property->getProperty('is_hidden')) {
+								if ($property->getProperty('is_hidden')) {
 // TODO: Пропускает обработку формы без валидации - проверить и исправить
-//								} else {
+								} else {
 									$result .= "if (\$this->getFormManager()->isNotValid('".$this->prepareForForm($property->getProperty('name'))."', ".($property->getProperty('type_id')).($property->getProperty('is_multiple')?", true":", false").", ".(isNotNULL($property->getProperty('parameters'))?"\"".$property->getProperty('parameters')."\"":"NULL").")) {\n";
 									$result .= "  \$this->getFormManager()->setError('".$this->prepareForForm($property->getProperty('name'))."');\n";
 									$result .= "}\n\n";
-//								}
+								}
 								break;
 
 							default:
@@ -873,15 +873,16 @@ class FormManager extends Core {
 		global $parameters;
 
 		$result = "";
-		if (isNotNULL($options['process']) or isNotNULL($options['action'])) {
 
-			if (isNULL($options['process'])) {
+		if (($options['process']) or ($options['action'])) {
+
+			if (!$options['process']) {
 				$options['process'] = $options['action']->getOwnerByClass('ProcessInstanceWrapper');
 			}
-			if (isNULL($options['action'])) {
+			if (!$options['action']) {
 				$options['action'] = $options['process']->getCurrentAction();
 			}
-			if (isNULL($options['properties'])) {
+			if (!$options['properties']) {
 				$options['properties'] = $options['action']->getProperty('[action]')->getProperty('[properties]')->getElements();
 			}
 		
@@ -952,9 +953,6 @@ class FormManager extends Core {
 					}
 				}
 			}
-		}
-		if (inNULL($options['action'])) {
-			$options['action'] = $options['process']->getCurrentAction();
 		}
 		return $result.((ACTION == 'execute')?"  \$this->complete();\n":((ACTION == 'saveform')?"  \$this->saveForm();\n":"")).($options['action']->isInteractive() == Constants::TRUE?"} else {\n  \$this->getFormManager()->formNotValid();\n}\n\n":"");
 	}
