@@ -2,7 +2,19 @@
 
 // $Id$
 
-ini_set("output_buffering",	1);
+// Включение буфферизации вывода
+ini_set("output_buffering", 1);
+
+// Включаем поддержку UTF-8
+ini_set("mbstring.func_overload", 7);
+ini_set("default_charset", "UTF-8");
+ini_set("mbstring.language", "Russian");
+ini_set("mbstring.internal_encoding", "UTF-8");
+ini_set("mbstring.encoding_translation", 1);
+ini_set("mbstring.http_input", "UTF-8,KOI8-R,CP1251");
+ini_set("mbstring.http_output", "UTF-8");
+ini_set("mbstring.detect_order", "UTF-8,KOI8-R,CP1251");
+
 
 // Использовать полную версию Doctrine
 define('USE_FULL_DOCTRINE', false);
@@ -60,7 +72,7 @@ define('EMAIL_FOR_ERRORS', 'cannabis@uk-most.ru');
 define('EXECUTE_IMMEDIATELY', false);
 
 // Использовать PHP5 XDebug для вывода информации об ошибках
-define('USE_XDEBUG', false);
+define('USE_XDEBUG', true);
 
 // Charset по умолчанию
 define('DEFAULT_CHARSET', 'UTF-8');
