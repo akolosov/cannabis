@@ -14,6 +14,12 @@ if (DEBUG_MODE) {
 ini_set("display_errors", 1);
 ini_set("display_startup_errors", 1);
 
+if (USE_XDEBUG) {
+    ini_set("xdebug.show_exception_trace", 1);
+    ini_set("xdebug.show_local_vars", 1);
+    ini_set("xdebug.show_mem_delta", 1);
+}
+
 if (ADVANCED_DEBUG_MODE) {
 	error_reporting(E_ALL);
 } else {
