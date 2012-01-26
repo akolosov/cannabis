@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 /**
@@ -29,7 +29,7 @@
  * @subpackage  Data
  * @author      Jonathan H. Wage <jwage@mac.com>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       1.0
  * @version     $Revision: 2552 $
  */
@@ -258,13 +258,22 @@ class Doctrine_Data
     public function purge($models = null)
     {
         if ($models) {
-            $models = Doctrine::filterInvalidModels($models);
+            $models = Doctrine_Core::filterInvalidModels($models);
         } else {
-            $models = Doctrine::getLoadedModels();
+            $models = Doctrine_Core::getLoadedModels();
         }
 
+        $connections = array();
         foreach ($models as $model) {
-            Doctrine::getTable($model)->createQuery()->delete()->execute();
+          $connections[Doctrine_Core::getTable($model)->getConnection()->getName()][] = $model;
+        }
+
+        foreach ($connections as $connection => $models) {
+            $models = Doctrine_Manager::getInstance()->getConnection($connection)->unitOfWork->buildFlushTree($models);
+            $models = array_reverse($models);
+            foreach ($models as $model) {
+                Doctrine_Core::getTable($model)->createQuery()->delete()->execute();
+            }
         }
     }
 }

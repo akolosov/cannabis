@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Oracle.php 4252 2008-04-19 07:37:53Z jwage $
+ *  $Id: Oracle.php 7490 2010-03-29 19:53:27Z jwage $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 /**
@@ -26,9 +26,9 @@
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @package     Doctrine
  * @subpackage  Transaction
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       1.0
- * @version     $Revision: 4252 $
+ * @version     $Revision: 7490 $
  */
 class Doctrine_Transaction_Oracle extends Doctrine_Transaction
 {
@@ -100,7 +100,7 @@ class Doctrine_Transaction_Oracle extends Doctrine_Transaction
                 throw new Doctrine_Transaction_Exception('Isolation level ' . $isolation . ' is not supported.');
         }
 
-        $query = 'ALTER SESSION ISOLATION LEVEL ' . $isolation;
+        $query = 'ALTER SESSION SET ISOLATION_LEVEL = ' . $isolation;
         return $this->conn->execute($query);
     }
 }

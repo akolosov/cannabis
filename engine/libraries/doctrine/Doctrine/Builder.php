@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 /**
@@ -24,7 +24,7 @@
  *
  * @package     Doctrine
  * @subpackage  Builder
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0
  * @version     $Revision: 4593 $
@@ -43,9 +43,9 @@ class Doctrine_Builder
     public function varExport($var)
     {
         $export = var_export($var, true);
-        $export = str_replace("\n", '', $export);
+        $export = str_replace("\n", PHP_EOL . str_repeat(' ', 50), $export);
         $export = str_replace('  ', ' ', $export);
-        $export = str_replace('array ( ', 'array(', $export);
+        $export = str_replace('array (', 'array(', $export);
         $export = str_replace('array( ', 'array(', $export);
         $export = str_replace(',)', ')', $export);
         $export = str_replace(', )', ')', $export);

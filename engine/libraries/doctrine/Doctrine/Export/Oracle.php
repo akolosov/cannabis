@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Oracle.php 5102 2008-10-16 11:03:01Z adrive $
+ *  $Id: Oracle.php 7490 2010-03-29 19:53:27Z jwage $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 /**
@@ -27,9 +27,9 @@
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       1.0
- * @version     $Revision: 5102 $
+ * @version     $Revision: 7490 $
  */
 class Doctrine_Export_Oracle extends Doctrine_Export
 {
@@ -38,29 +38,26 @@ class Doctrine_Export_Oracle extends Doctrine_Export
      *
      * @param object $db database object that is extended by this class
      * @param string $name name of the database that should be created
-     * @return mixed MDB2_OK on success, a MDB2 error on failure
-     * @access public
+     * @return boolean      success of operation
      */
     public function createDatabase($name)
     {
-        if ( ! $this->conn->getAttribute(Doctrine::ATTR_EMULATE_DATABASE))
-            throw new Doctrine_Export_Exception('database creation is only supported if the "emulate_database" attribute is enabled');
+        if ($this->conn->getAttribute(Doctrine_Core::ATTR_EMULATE_DATABASE)) {
+            $username   = $name;
+            $password   = $this->conn->dsn['password'] ? $this->conn->dsn['password'] : $name;
 
-        $username   = sprintf($this->conn->getAttribute(Doctrine::ATTR_DB_NAME_FORMAT), $name);
-        $password   = $this->conn->dsn['password'] ? $this->conn->dsn['password'] : $name;
+            $tablespace = $this->conn->options['default_tablespace']
+                        ? ' DEFAULT TABLESPACE '.$this->conn->options['default_tablespace'] : '';
 
-        $tablespace = $this->conn->getAttribute(Doctrine::ATTR_DB_NAME_FORMAT)
-                    ? ' DEFAULT TABLESPACE '.$this->conn->options['default_tablespace'] : '';
-
-        $query  = 'CREATE USER ' . $username . ' IDENTIFIED BY ' . $password . $tablespace;
-        $result = $this->conn->exec($query);
-
-        try {
-            $query = 'GRANT CREATE SESSION, CREATE TABLE, UNLIMITED TABLESPACE, CREATE SEQUENCE, CREATE TRIGGER TO ' . $username;
+            $query  = 'CREATE USER ' . $username . ' IDENTIFIED BY ' . $password . $tablespace;
             $result = $this->conn->exec($query);
-        } catch (Exception $e) {
-            $query = 'DROP USER '.$username.' CASCADE';
-            $result2 = $this->conn->exec($query);
+
+            try {
+                $query = 'GRANT CREATE SESSION, CREATE TABLE, UNLIMITED TABLESPACE, CREATE SEQUENCE, CREATE TRIGGER TO ' . $username;
+                $result = $this->conn->exec($query);
+            } catch (Exception $e) {
+                $this->dropDatabase($username);
+            }
         }
         return true;
     }
@@ -70,18 +67,33 @@ class Doctrine_Export_Oracle extends Doctrine_Export
      *
      * @param object $this->conn database object that is extended by this class
      * @param string $name name of the database that should be dropped
-     * @return mixed MDB2_OK on success, a MDB2 error on failure
+     * @return boolean      success of operation
      * @access public
      */
     public function dropDatabase($name)
     {
-        if ( ! $this->conn->getAttribute(Doctrine::ATTR_EMULATE_DATABASE))
-            throw new Doctrine_Export_Exception('database dropping is only supported if the
-                                                       "emulate_database" option is enabled');
+        $sql = <<<SQL
+BEGIN
+  -- user_tables contains also materialized views
+  FOR I IN (SELECT table_name FROM user_tables WHERE table_name NOT IN (SELECT mview_name FROM user_mviews))
+  LOOP 
+    EXECUTE IMMEDIATE 'DROP TABLE "'||I.table_name||'" CASCADE CONSTRAINTS';
+  END LOOP;
+  
+  FOR I IN (SELECT SEQUENCE_NAME FROM USER_SEQUENCES)
+  LOOP
+    EXECUTE IMMEDIATE 'DROP SEQUENCE "'||I.SEQUENCE_NAME||'"';
+  END LOOP;
+END;
 
-        $username = sprintf($this->conn->getAttribute(Doctrine::ATTR_DB_NAME_FORMAT), $name);
+SQL;
 
-        return $this->conn->exec('DROP USER ' . $username . ' CASCADE');
+        $this->conn->exec($sql);
+
+        if ($this->conn->getAttribute(Doctrine_Core::ATTR_EMULATE_DATABASE)) {
+            $username = $name;
+            $this->conn->exec('DROP USER ' . $username . ' CASCADE');
+        }
     }
 
     /**
@@ -90,12 +102,16 @@ class Doctrine_Export_Oracle extends Doctrine_Export
      * @param string $name  name of the PK field
      * @param string $table name of the table
      * @param string $start start value for the sequence
-     * @return mixed        MDB2_OK on success, a MDB2 error on failure
+     * @return string        Sql code
      * @access private
      */
     public function _makeAutoincrement($name, $table, $start = 1)
     {
         $sql   = array();
+
+        if ( ! $this->conn->getAttribute(Doctrine_Core::ATTR_QUOTE_IDENTIFIER)) {
+        	$table = strtoupper($table);
+        }
         $indexName  = $table . '_AI_PK';
         $definition = array(
             'primary' => true,
@@ -132,7 +148,6 @@ DECLARE
    last_Sequence NUMBER;
    last_InsertID NUMBER;
 BEGIN
-   SELECT ' . $this->conn->quoteIdentifier($sequenceName) . '.NEXTVAL INTO :NEW.' . $name . ' FROM DUAL;
    IF (:NEW.' . $name . ' IS NULL OR :NEW.'.$name.' = 0) THEN
       SELECT ' . $this->conn->quoteIdentifier($sequenceName) . '.NEXTVAL INTO :NEW.' . $name . ' FROM DUAL;
    ELSE
@@ -203,7 +218,7 @@ END;';
     public function getAdvancedForeignKeyOptions(array $definition)
     {
         $query = '';
-        if (isset($definition['onDelete'])) {
+        if (isset($definition['onDelete']) && strtoupper(trim($definition['onDelete'])) != 'NO ACTION') {
             $query .= ' ON DELETE ' . $definition['onDelete'];
         }
         if (isset($definition['deferrable'])) {
@@ -296,6 +311,10 @@ END;';
     {
         $sql = parent::createTableSql($name, $fields, $options);
 
+        if (isset($options['comment']) && ! empty($options['comment'])) {
+     	    $sql[] = $this->_createTableCommentSql($name, $options['comment']);
+     	}
+
         foreach ($fields as $fieldName => $field) {
             if (isset($field['sequence'])) {
               $sql[] = $this->createSequenceSql($field['sequence'], 1);
@@ -304,6 +323,10 @@ END;';
             if (isset($field['autoincrement']) && $field['autoincrement'] ||
                (isset($field['autoinc']) && $fields['autoinc'])) {           
                 $sql = array_merge($sql, $this->_makeAutoincrement($fieldName, $name));
+            }
+
+            if (isset($field['comment']) && ! empty($field['comment'])){
+                $sql[] = $this->_createColumnCommentSql($name,$fieldName,$field['comment']); 
             }
         }
         
@@ -318,6 +341,33 @@ END;';
         }
         
         return $sql;
+    }
+
+    /**
+     * create a comment on a table
+     *
+     * @param string $table    Name of the table we are commenting
+     * @param string $comment  The comment for the table
+     *
+     * @return string
+     */
+    public function _createTableCommentSql($table,$comment)
+    {
+        return 'COMMENT ON TABLE '. $this->conn->quoteIdentifier($table, true). ' IS '.$this->conn->quote($comment, 'text').'';
+    }
+
+    /**
+     * create a comment on a column
+     *
+     * @param string $table    Name of the table
+     * @param string $column   Name of the column we are commenting
+     * @param string $comment  The comment for the table
+     *
+     * @return string
+     */
+    public function _createColumnCommentSql($table,$column, $comment)
+    {
+        return 'COMMENT ON COLUMN '. $this->conn->quoteIdentifier($table, true). '.'. $this->conn->quoteIdentifier($column, true). ' IS '.$this->conn->quote($comment, 'text').'';
     }
 
     /**
@@ -448,7 +498,7 @@ END;';
         if ( ! empty($changes['add']) && is_array($changes['add'])) {
             $fields = array();
             foreach ($changes['add'] as $fieldName => $field) {
-                $fields[] = $this->conn->getDeclaration($fieldName, $field);
+                $fields[] = $this->getDeclaration($fieldName, $field); 
             }
             $result = $this->conn->exec('ALTER TABLE ' . $name . ' ADD (' . implode(', ', $fields) . ')');
         }
@@ -456,7 +506,7 @@ END;';
         if ( ! empty($changes['change']) && is_array($changes['change'])) {
             $fields = array();
             foreach ($changes['change'] as $fieldName => $field) {
-                $fields[] = $fieldName. ' ' . $this->conn->getDeclaration('', $field['definition']);
+                $fields[] = $fieldName. ' ' . $this->getDeclaration('', $field['definition']);
             }
             $result = $this->conn->exec('ALTER TABLE ' . $name . ' MODIFY (' . implode(', ', $fields) . ')');
         }
@@ -533,11 +583,11 @@ END;';
         
         if ( isset($definition['type']))
         {
-            if(strtolower($definition['type']) == 'unique') {
+            if (strtolower($definition['type']) == 'unique') {
                 $type = strtoupper($definition['type']);
             } else {
                 throw new Doctrine_Export_Exception(
-                    'Unknow type '.$definition['type'] .' for index '.$name
+                    'Unknown type '.$definition['type'] .' for index '.$name
                 );
             }
         } else {
@@ -545,8 +595,8 @@ END;';
             return null;
         }
         
-        if (!isset($definition['fields']) || !is_array($definition['fields'])) {
-            throw new Doictrine_Export_Exception('No columns given for index '.$name);
+        if ( !isset($definition['fields']) || !is_array($definition['fields'])) {
+            throw new Doctrine_Export_Exception('No columns given for index '.$name);
         }
         
         $query = 'CONSTRAINT '.$name.' '.$type.' ('.$this->getIndexFieldDeclarationList($definition['fields']).')';

@@ -83,18 +83,18 @@ function logMessage($a_str) {
 
 		if (!USE_XDEBUG) {
 			$tracemessage = "-----------[ trace info begin ]------------\n".getTrace()."\n------------[ trace info end ]-------------\n\n";
-	
+
 			if ((preg_match("/^error.*/i", $a_str)) && (LOG_ERRORS)) {
 				fwrite($fp, $tracemessage);
 			}
-	
+
 			if ((preg_match("/^except.*/i", $a_str)) && (LOG_EXCEPTIONS)) {
 				fwrite($fp, $tracemessage);
 				if (EMAIL_ERRORS) {
 					mail(EMAIL_FOR_ERRORS, "Серьёзная ошибка", "Пользователь: ".USER_NAME."\n"."Модуль: ".MODULE."\n"."Адрес: ".$_SERVER['REQUEST_URI']."\n\n".$logmessage."\n\n".$tracemessage);
 				}
 			}
-			
+
 			fclose($fp);
 		}
 

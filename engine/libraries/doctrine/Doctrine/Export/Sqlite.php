@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Sqlite.php 4252 2008-04-19 07:37:53Z jwage $
+ *  $Id: Sqlite.php 7490 2010-03-29 19:53:27Z jwage $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 /**
@@ -27,9 +27,9 @@
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.phpdoctrine.org
+ * @link        www.doctrine-project.org
  * @since       1.0
- * @version     $Revision: 4252 $
+ * @version     $Revision: 7490 $
  */
 class Doctrine_Export_Sqlite extends Doctrine_Export
 {
@@ -104,7 +104,21 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
     {
         $name  = $this->conn->formatter->getIndexName($name);
         $name  = $this->conn->quoteIdentifier($name);
-        $query = 'CREATE INDEX ' . $name . ' ON ' . $table;
+        $type  = '';
+
+        if (isset($definition['type'])) {
+            switch (strtolower($definition['type'])) {
+                case 'unique':
+                    $type = strtoupper($definition['type']) . ' ';
+                break;
+                default:
+                    throw new Doctrine_Export_Exception(
+                        'Unknown type ' . $definition['type'] . ' for index ' . $name . ' in table ' . $table
+                    );
+            }
+        }
+
+        $query = 'CREATE ' . $type . 'INDEX ' . $name . ' ON ' . $table;
         $query .= ' (' . $this->getIndexFieldDeclarationList($definition['fields']) . ')';
 
         return $query;
@@ -271,8 +285,8 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
      */
     public function createSequence($seqName, $start = 1, array $options = array())
     {
-        $sequenceName   = $this->conn->quoteIdentifier($this->conn->getSequenceName($seqName), true);
-        $seqcolName     = $this->conn->quoteIdentifier($this->conn->getAttribute(Doctrine::ATTR_SEQCOL_NAME), true);
+        $sequenceName   = $this->conn->quoteIdentifier($this->conn->formatter->getSequenceName($seqName), true);
+        $seqcolName     = $this->conn->quoteIdentifier($this->conn->getAttribute(Doctrine_Core::ATTR_SEQCOL_NAME), true);
         $query          = 'CREATE TABLE ' . $sequenceName . ' (' . $seqcolName . ' INTEGER PRIMARY KEY DEFAULT 0 NOT NULL)';
 
         $this->conn->exec($query);
@@ -304,7 +318,7 @@ class Doctrine_Export_Sqlite extends Doctrine_Export
      */
     public function dropSequenceSql($sequenceName)
     {
-        $sequenceName = $this->conn->quoteIdentifier($this->conn->getSequenceName($sequenceName), true);
+        $sequenceName = $this->conn->quoteIdentifier($this->conn->formatter->getSequenceName($sequenceName), true);
 
         return 'DROP TABLE ' . $sequenceName;
     }
